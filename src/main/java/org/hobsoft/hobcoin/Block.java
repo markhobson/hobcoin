@@ -51,6 +51,12 @@ public class Block
 		return hash;
 	}
 	
+	public boolean isValid(Block previous)
+	{
+		return hash.equals(calculateHash())
+			&& (previous == null || previousHash.equals(previous.hash()));
+	}
+	
 	private String calculateHash()
 	{
 		return Hashing.sha256()

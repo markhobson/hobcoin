@@ -47,4 +47,21 @@ public class Blockchain implements Iterable<Block>
 		blocks.add(block);
 		return this;
 	}
+	
+	public boolean isValid()
+	{
+		Block previous = null;
+		
+		for (Block block : blocks)
+		{
+			if (!block.isValid(previous))
+			{
+				return false;
+			}
+			
+			previous = block;
+		}
+		
+		return true;
+	}
 }

@@ -36,5 +36,6 @@ public final class Main
 		PrintStream out = System.out;
 		StreamSupport.stream(blockchain.spliterator(), false)
 			.forEach(block -> out.println(block.hash()));
+		out.println(blockchain.isValid());
 	}
 }
