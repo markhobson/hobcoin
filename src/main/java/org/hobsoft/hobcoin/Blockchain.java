@@ -13,28 +13,38 @@
  */
 package org.hobsoft.hobcoin;
 
-import java.io.PrintStream;
-import java.util.stream.StreamSupport;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * Runs the blockchain.
+ * A linked list of blocks.
  */
-public final class Main
+public class Blockchain implements Iterable<Block>
 {
-	private Main()
+	private final List<Block> blocks;
+	
+	public Blockchain()
 	{
-		throw new AssertionError();
+		blocks = new ArrayList<>();
 	}
 	
-	public static void main(String[] args)
+	@Override
+	public Iterator<Block> iterator()
 	{
-		Blockchain blockchain = new Blockchain();
-		blockchain.add(new Block("In the beginning...", null));
-		blockchain.add(new Block("There was Hobcoin", blockchain.tail()));
-		blockchain.add(new Block("And it was good", blockchain.tail()));
-		
-		PrintStream out = System.out;
-		StreamSupport.stream(blockchain.spliterator(), false)
-			.forEach(block -> out.println(block.hash()));
+		return blocks.iterator();
+	}
+	
+	public Block tail()
+	{
+		return blocks.isEmpty()
+			? null
+			: blocks.get(blocks.size() - 1);
+	}
+	
+	public Blockchain add(Block block)
+	{
+		blocks.add(block);
+		return this;
 	}
 }
