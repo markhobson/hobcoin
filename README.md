@@ -1,0 +1,2 @@
+# hobcoin
+Adventures in cryptocurrencies.
