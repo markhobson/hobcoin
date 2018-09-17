@@ -90,7 +90,12 @@ public class Block
 	private String calculateHash()
 	{
 		return Hashing.sha256()
-			.hashString(previousHash + timestamp + nonce + data, UTF_8)
+			.hashObject(this, (from, into) -> into
+				.putString(from.previousHash, UTF_8)
+				.putLong(from.timestamp)
+				.putLong(from.nonce)
+				.putString(from.data, UTF_8)
+			)
 			.toString();
 	}
 }
