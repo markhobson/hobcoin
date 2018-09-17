@@ -15,10 +15,13 @@ package org.hobsoft.hobcoin;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.logging.Level.INFO;
 
 /**
  * A block of data in the blockchain.
@@ -27,13 +30,17 @@ public class Block
 {
 	private static final String GENESIS_HASH = "0";
 	
+	private static final Logger LOG = Logger.getLogger(Block.class.getName());
+	
 	private final String previousHash;
 	
 	private final long timestamp;
 	
 	private final String data;
 	
-	private final String hash;
+	private int nonce;
+	
+	private String hash;
 	
 	public Block(String data, Block previous)
 	{
@@ -43,6 +50,7 @@ public class Block
 			.orElse(GENESIS_HASH);
 		
 		timestamp = new Date().getTime();
+		nonce = 0;
 		hash = calculateHash();
 	}
 	
@@ -51,16 +59,38 @@ public class Block
 		return hash;
 	}
 	
-	public boolean isValid(Block previous)
+	public boolean isValid(Block previous, int difficulty)
 	{
 		return hash.equals(calculateHash())
-			&& (previous == null || previousHash.equals(previous.hash()));
+			&& (previous == null || previousHash.equals(previous.hash()))
+			&& isMined(difficulty);
+	}
+	
+	public void mine(int difficulty)
+	{
+		LOG.log(INFO, "Mining to difficulty {0}...", difficulty);
+		long start = System.currentTimeMillis();
+		
+		while (!isMined(difficulty))
+		{
+			nonce++;
+			hash = calculateHash();
+		}
+		
+		LOG.log(INFO, "Mined block {0} in {1}ms", new Object[] {hash, System.currentTimeMillis() - start});
+	}
+	
+	private boolean isMined(int difficulty)
+	{
+		String targetHashPrefix = Strings.repeat("0", difficulty);
+		
+		return hash.startsWith(targetHashPrefix);
 	}
 	
 	private String calculateHash()
 	{
 		return Hashing.sha256()
-			.hashString(previousHash + timestamp + data, UTF_8)
+			.hashString(previousHash + timestamp + nonce + data, UTF_8)
 			.toString();
 	}
 }

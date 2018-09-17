@@ -22,6 +22,8 @@ import java.util.List;
  */
 public class Blockchain implements Iterable<Block>
 {
+	private static final int MINING_DIFFICULTY = 5;
+	
 	private final List<Block> blocks;
 	
 	public Blockchain()
@@ -44,6 +46,7 @@ public class Blockchain implements Iterable<Block>
 	
 	public Blockchain add(Block block)
 	{
+		block.mine(MINING_DIFFICULTY);
 		blocks.add(block);
 		return this;
 	}
@@ -54,7 +57,7 @@ public class Blockchain implements Iterable<Block>
 		
 		for (Block block : blocks)
 		{
-			if (!block.isValid(previous))
+			if (!block.isValid(previous, MINING_DIFFICULTY))
 			{
 				return false;
 			}
