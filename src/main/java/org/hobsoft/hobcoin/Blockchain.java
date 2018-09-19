@@ -74,6 +74,11 @@ public class Blockchain implements Iterable<Block>
 			throw new InvalidBlockException("Previous hash does not match tail block");
 		}
 		
+		if (!block.isMined(difficulty()))
+		{
+			throw new InvalidBlockException("Unmined block");
+		}
+		
 		return addQuietly(block);
 	}
 	

@@ -85,7 +85,7 @@ public class Block
 		LOG.log(INFO, "Mined block {0} in {1}ms", new Object[] {hash, System.currentTimeMillis() - start});
 	}
 	
-	private boolean isMined(int difficulty)
+	public boolean isMined(int difficulty)
 	{
 		String targetHashPrefix = Strings.repeat("0", difficulty);
 		
