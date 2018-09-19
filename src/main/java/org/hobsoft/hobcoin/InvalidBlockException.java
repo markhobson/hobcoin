@@ -14,17 +14,12 @@
 package org.hobsoft.hobcoin;
 
 /**
- * Indicates a general Hobcoin error.
+ * Indicates that a block is not valid.
  */
-public class HobcoinException extends RuntimeException
+public class InvalidBlockException extends HobcoinException
 {
-	public HobcoinException(String message)
+	public InvalidBlockException(String message)
 	{
 		super(message);
-	}
-	
-	public HobcoinException(String message, Throwable cause)
-	{
-		super(message, cause);
 	}
 }

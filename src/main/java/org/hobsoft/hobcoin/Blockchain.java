@@ -26,6 +26,8 @@ import static java.util.Collections.singletonList;
  */
 public class Blockchain implements Iterable<Block>
 {
+	private static final String GENESIS_BLOCK_HASH = "0";
+	
 	private static final int MINING_DIFFICULTY = 5;
 	
 	private final List<Block> blocks;
@@ -37,13 +39,18 @@ public class Blockchain implements Iterable<Block>
 		blocks = new ArrayList<>();
 		unspentTransactionOutputs = new UnspentTransactionOutputs();
 		
-		add(newGenesisBlock(recipient, amount));
+		addQuietly(newGenesisBlock(recipient, amount));
 	}
 	
 	@Override
 	public Iterator<Block> iterator()
 	{
 		return blocks.iterator();
+	}
+	
+	public int height()
+	{
+		return blocks.size();
 	}
 	
 	public Block tail()
@@ -53,14 +60,21 @@ public class Blockchain implements Iterable<Block>
 			: blocks.get(blocks.size() - 1);
 	}
 	
+	/**
+	 * Adds the specified block to the end of this blockchain.
+	 * 
+	 * @param block the block to add
+	 * @return this blockchain
+	 * @throws InvalidBlockException if the block's previous hash does not match the tail block's hash
+	 */
 	public Blockchain add(Block block)
 	{
-		// TODO: validate block
+		if (!tail().hash().equals(block.previousHash()))
+		{
+			throw new InvalidBlockException("Previous hash does not match tail block");
+		}
 		
-		blocks.add(block);
-		unspentTransactionOutputs.removeSpentTransactionOutputs(block.transaction());
-		unspentTransactionOutputs.addUnspentTransactionOutputs(block.transaction());
-		return this;
+		return addQuietly(block);
 	}
 	
 	public boolean isValid()
@@ -90,10 +104,18 @@ public class Blockchain implements Iterable<Block>
 		return unspentTransactionOutputs.unspentTransactionOutputs(owner, minimumAmount);
 	}
 	
+	private Blockchain addQuietly(Block block)
+	{
+		blocks.add(block);
+		unspentTransactionOutputs.removeSpentTransactionOutputs(block.transaction());
+		unspentTransactionOutputs.addUnspentTransactionOutputs(block.transaction());
+		return this;
+	}
+	
 	private static Block newGenesisBlock(PublicKey recipient, long amount)
 	{
 		TransactionOutput output = new TransactionOutput(recipient, amount);
 		Transaction transaction = new Transaction(emptyList(), singletonList(output));
-		return new Block(transaction, null);
+		return new Block(transaction, GENESIS_BLOCK_HASH);
 	}
 }

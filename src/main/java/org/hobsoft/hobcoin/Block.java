@@ -14,7 +14,6 @@
 package org.hobsoft.hobcoin;
 
 import java.util.Date;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -28,8 +27,6 @@ import static java.util.logging.Level.INFO;
  */
 public class Block
 {
-	private static final String GENESIS_HASH = "0";
-	
 	private static final Logger LOG = Logger.getLogger(Block.class.getName());
 	
 	private final String previousHash;
@@ -42,12 +39,10 @@ public class Block
 	
 	private String hash;
 	
-	public Block(Transaction transaction, Block previous)
+	public Block(Transaction transaction, String previousHash)
 	{
 		this.transaction = transaction;
-		this.previousHash = Optional.ofNullable(previous)
-			.map(Block::hash)
-			.orElse(GENESIS_HASH);
+		this.previousHash = previousHash;
 		
 		timestamp = new Date().getTime();
 		nonce = 0;
@@ -57,6 +52,11 @@ public class Block
 	public Transaction transaction()
 	{
 		return transaction;
+	}
+	
+	public String previousHash()
+	{
+		return previousHash;
 	}
 	
 	public String hash()
