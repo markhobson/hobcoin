@@ -36,15 +36,15 @@ public class Block
 	
 	private final long timestamp;
 	
-	private final String data;
+	private final Transaction transaction;
 	
 	private int nonce;
 	
 	private String hash;
 	
-	public Block(String data, Block previous)
+	public Block(Transaction transaction, Block previous)
 	{
-		this.data = data;
+		this.transaction = transaction;
 		this.previousHash = Optional.ofNullable(previous)
 			.map(Block::hash)
 			.orElse(GENESIS_HASH);
@@ -52,6 +52,11 @@ public class Block
 		timestamp = new Date().getTime();
 		nonce = 0;
 		hash = calculateHash();
+	}
+	
+	public Transaction transaction()
+	{
+		return transaction;
 	}
 	
 	public String hash()
@@ -94,7 +99,7 @@ public class Block
 				.putString(from.previousHash, UTF_8)
 				.putLong(from.timestamp)
 				.putLong(from.nonce)
-				.putString(from.data, UTF_8)
+				.putString(from.transaction.id(), UTF_8)
 			)
 			.toString();
 	}

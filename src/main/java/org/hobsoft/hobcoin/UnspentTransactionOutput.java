@@ -13,29 +13,32 @@
  */
 package org.hobsoft.hobcoin;
 
-import java.io.PrintStream;
-import java.util.stream.StreamSupport;
+import java.security.PublicKey;
 
 /**
- * Runs the blockchain.
+ * An unspent transaction output (UTXO) within a blockchain.
  */
-public final class Main
+class UnspentTransactionOutput extends TransactionOutput
 {
-	private Main()
+	private final String transactionId;
+	
+	private final int transactionOutputIndex;
+	
+	UnspentTransactionOutput(String transactionId, int transactionOutputIndex, PublicKey recipient, long amount)
 	{
-		throw new AssertionError();
+		super(recipient, amount);
+		
+		this.transactionId = transactionId;
+		this.transactionOutputIndex = transactionOutputIndex;
 	}
 	
-	public static void main(String[] args)
+	public String transactionId()
 	{
-		Blockchain blockchain = new Blockchain();
-		blockchain.add(new Block("In the beginning...", null));
-		blockchain.add(new Block("There was Hobcoin", blockchain.tail()));
-		blockchain.add(new Block("And it was good", blockchain.tail()));
-		
-		PrintStream out = System.out;
-		StreamSupport.stream(blockchain.spliterator(), false)
-			.forEach(block -> out.println(block.hash()));
-		out.println(blockchain.isValid());
+		return transactionId;
+	}
+	
+	public int transactionOutputIndex()
+	{
+		return transactionOutputIndex;
 	}
 }

@@ -13,9 +13,13 @@
  */
 package org.hobsoft.hobcoin;
 
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 
 /**
  * A linked list of blocks.
@@ -26,9 +30,14 @@ public class Blockchain implements Iterable<Block>
 	
 	private final List<Block> blocks;
 	
-	public Blockchain()
+	private final UnspentTransactionOutputs unspentTransactionOutputs;
+	
+	public Blockchain(PublicKey recipient, long amount)
 	{
 		blocks = new ArrayList<>();
+		unspentTransactionOutputs = new UnspentTransactionOutputs();
+		
+		add(newGenesisBlock(recipient, amount));
 	}
 	
 	@Override
@@ -46,8 +55,11 @@ public class Blockchain implements Iterable<Block>
 	
 	public Blockchain add(Block block)
 	{
-		block.mine(MINING_DIFFICULTY);
+		// TODO: validate block
+		
 		blocks.add(block);
+		unspentTransactionOutputs.removeSpentTransactionOutputs(block.transaction());
+		unspentTransactionOutputs.addUnspentTransactionOutputs(block.transaction());
 		return this;
 	}
 	
@@ -66,5 +78,22 @@ public class Blockchain implements Iterable<Block>
 		}
 		
 		return true;
+	}
+
+	public int difficulty()
+	{
+		return MINING_DIFFICULTY;
+	}
+	
+	public List<UnspentTransactionOutput> unspentTransactionOutputs(PublicKey owner, long minimumAmount)
+	{
+		return unspentTransactionOutputs.unspentTransactionOutputs(owner, minimumAmount);
+	}
+	
+	private static Block newGenesisBlock(PublicKey recipient, long amount)
+	{
+		TransactionOutput output = new TransactionOutput(recipient, amount);
+		Transaction transaction = new Transaction(emptyList(), singletonList(output));
+		return new Block(transaction, null);
 	}
 }
