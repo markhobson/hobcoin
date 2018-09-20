@@ -69,6 +69,11 @@ public class TransactionInput
 		return signature;
 	}
 	
+	public boolean signed()
+	{
+		return signature != null;
+	}
+	
 	public TransactionInput sign(PrivateKey privateKey)
 	{
 		try
