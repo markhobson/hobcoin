@@ -14,12 +14,10 @@
 package org.hobsoft.hobcoin;
 
 import java.security.PublicKey;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -47,28 +45,17 @@ class UnspentTransactionOutputs
 			.collect(toList());
 	}
 	
-	public List<UnspentTransactionOutput> unspentTransactionOutputs(PublicKey owner, long minimumAmount)
+	public List<UnspentTransactionOutput> find(PublicKey owner)
 	{
-		List<UnspentTransactionOutput> ownerUnspentOutputs = unspentOutputs.values()
+		return unspentOutputs.values()
 			.stream()
 			.filter(out -> out.recipient().equals(owner))
 			.collect(toList());
-		
-		if (minimumAmount > 0)
-		{
-			ownerUnspentOutputs = atLeast(ownerUnspentOutputs, minimumAmount);
-		}
-		
-		return ownerUnspentOutputs;
 	}
 	
 	public void removeSpentTransactionOutputs(Transaction transaction)
 	{
-		unspentOutputs.keySet().removeAll(transaction.inputs()
-			.stream()
-			.map(TransactionInput::transactionOutputPoint)
-			.collect(toList())
-		);
+		unspentOutputs.keySet().removeAll(transaction.inputPoints());
 	}
 	
 	public void addUnspentTransactionOutputs(Transaction transaction)
@@ -82,22 +69,5 @@ class UnspentTransactionOutputs
 			
 			unspentOutputs.put(outputPoint, unspentOutput);
 		}
-	}
-	
-	private static List<UnspentTransactionOutput> atLeast(List<UnspentTransactionOutput> allUnspentOutputs,
-		long minimumAmount)
-	{
-		List<UnspentTransactionOutput> unspentOutputs = new ArrayList<>();
-		long amount = 0;
-		
-		for (int index = 0; index < allUnspentOutputs.size() && amount < minimumAmount; index++)
-		{
-			UnspentTransactionOutput unspentOutput = allUnspentOutputs.get(index);
-			
-			unspentOutputs.add(unspentOutput);
-			amount += unspentOutput.amount();
-		}
-		
-		return unspentOutputs;
 	}
 }

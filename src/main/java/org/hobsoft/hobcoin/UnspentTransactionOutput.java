@@ -14,6 +14,8 @@
 package org.hobsoft.hobcoin;
 
 import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An unspent transaction output (UTXO) within a blockchain.
@@ -32,5 +34,27 @@ class UnspentTransactionOutput extends TransactionOutput
 	public TransactionOutputPoint transactionOutputPoint()
 	{
 		return transactionOutputPoint;
+	}
+	
+	public static List<UnspentTransactionOutput> atLeast(List<UnspentTransactionOutput> allUnspentOutputs,
+		long minimumAmount)
+	{
+		if (minimumAmount == 0)
+		{
+			return allUnspentOutputs;
+		}
+		
+		List<UnspentTransactionOutput> unspentOutputs = new ArrayList<>();
+		long amount = 0;
+		
+		for (int index = 0; index < allUnspentOutputs.size() && amount < minimumAmount; index++)
+		{
+			UnspentTransactionOutput unspentOutput = allUnspentOutputs.get(index);
+			
+			unspentOutputs.add(unspentOutput);
+			amount += unspentOutput.amount();
+		}
+		
+		return unspentOutputs;
 	}
 }

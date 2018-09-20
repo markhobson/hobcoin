@@ -17,10 +17,10 @@ import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
+
+import static org.hobsoft.hobcoin.UnspentTransactionOutput.atLeast;
 
 /**
  * A linked list of blocks.
@@ -85,7 +85,7 @@ public class Blockchain implements Iterable<Block>
 	
 	public List<UnspentTransactionOutput> unspentTransactionOutputs(PublicKey owner, long minimumAmount)
 	{
-		return unspentTransactionOutputs.unspentTransactionOutputs(owner, minimumAmount);
+		return atLeast(unspentTransactionOutputs.find(owner), minimumAmount);
 	}
 	
 	private void validateBlock(Block block)
