@@ -75,7 +75,7 @@ public class Blockchain implements Iterable<Block>
 		
 		// TODO: validate block timestamp
 		
-		if (!tail().hash().equals(block.previousHash()))
+		if (!block.follows(tail()))
 		{
 			throw new InvalidBlockException("Previous hash does not match tail block");
 		}

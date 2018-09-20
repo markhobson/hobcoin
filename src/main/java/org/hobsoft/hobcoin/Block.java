@@ -54,14 +54,14 @@ public class Block
 		return transaction;
 	}
 	
-	public String previousHash()
-	{
-		return previousHash;
-	}
-	
 	public String hash()
 	{
 		return hash;
+	}
+	
+	public boolean follows(Block previous)
+	{
+		return previous.hash().equals(previousHash);
 	}
 	
 	public void mine(int difficulty)
