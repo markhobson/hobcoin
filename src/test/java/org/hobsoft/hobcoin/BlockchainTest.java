@@ -123,6 +123,20 @@ public class BlockchainTest
 		blockchain.add(block);
 	}
 	
+	@Test
+	public void cannotAddBlockWithNonZeroTransactionAmount()
+	{
+		Transaction transaction = wallet.transfer(blockchain, new Wallet().address(), 100);
+		TransactionOutput output = new TransactionOutput(transaction.outputs().iterator().next().recipient(), 200);
+		Transaction unbalancedTransaction = new Transaction(transaction.inputs(), singletonList(output));
+		Block block = new Block(unbalancedTransaction, blockchain.tail().hash())
+			.mine(blockchain.difficulty());
+		
+		thrown.expect(InvalidTransactionException.class);
+		
+		blockchain.add(block);
+	}
+	
 	private Transaction someTransaction()
 	{
 		PublicKey recipient = new Wallet().address();

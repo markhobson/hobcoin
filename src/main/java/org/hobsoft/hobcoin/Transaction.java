@@ -55,6 +55,13 @@ public class Transaction
 		return inputs;
 	}
 	
+	public List<TransactionOutputPoint> inputPoints()
+	{
+		return inputs.stream()
+			.map(TransactionInput::transactionOutputPoint)
+			.collect(toList());
+	}
+	
 	public List<TransactionOutput> outputs()
 	{
 		return outputs;
@@ -72,6 +79,13 @@ public class Transaction
 		return IntStream.range(0, outputs.size())
 			.mapToObj(index -> new TransactionOutputPoint(id, index))
 			.collect(toList());
+	}
+	
+	public long amount()
+	{
+		return outputs.stream()
+			.mapToLong(TransactionOutput::amount)
+			.sum();
 	}
 	
 	private String calculateHash()

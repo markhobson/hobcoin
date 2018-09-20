@@ -17,8 +17,10 @@ import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 /**
  * A linked list of blocks.
@@ -66,7 +68,8 @@ public class Blockchain implements Iterable<Block>
 	 * @throws InvalidBlockException if the block's previous hash does not match the tail block's hash, or the block is
 	 * not mined to the current difficultly
 	 * @throws InvalidTransactionException if a transaction input within the block has already been spent, or a
-	 * transaction input has not been signed, or a transaction input signature cannot be verified
+	 * transaction input has not been signed, or a transaction input signature cannot be verified, or a transaction's
+	 * inputs do not balance its outputs
 	 */
 	public Blockchain add(Block block)
 	{
@@ -109,6 +112,19 @@ public class Blockchain implements Iterable<Block>
 		// TODO: validate transaction id
 		
 		transaction.inputs().forEach(this::validateTransactionInput);
+		
+		if (getInputsAmount(transaction) != transaction.amount())
+		{
+			throw new InvalidTransactionException("Non-zero net amount");
+		}
+	}
+	
+	private long getInputsAmount(Transaction transaction)
+	{
+		return unspentTransactionOutputs.find(transaction.inputPoints())
+			.stream()
+			.mapToLong(UnspentTransactionOutput::amount)
+			.sum();
 	}
 	
 	private void validateTransactionInput(TransactionInput input)

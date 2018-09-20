@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -37,6 +38,13 @@ class UnspentTransactionOutputs
 	public Optional<UnspentTransactionOutput> find(TransactionOutputPoint outputPoint)
 	{
 		return Optional.ofNullable(unspentOutputs.get(outputPoint));
+	}
+	
+	public List<UnspentTransactionOutput> find(List<TransactionOutputPoint> outputPoints)
+	{
+		return outputPoints.stream()
+			.map(unspentOutputs::get)
+			.collect(toList());
 	}
 	
 	public List<UnspentTransactionOutput> unspentTransactionOutputs(PublicKey owner, long minimumAmount)
