@@ -146,8 +146,7 @@ public class Blockchain implements Iterable<Block>
 	private Blockchain addQuietly(Block block)
 	{
 		blocks.add(block);
-		unspentTransactionOutputs.removeSpentTransactionOutputs(block.transaction());
-		unspentTransactionOutputs.addUnspentTransactionOutputs(block.transaction());
+		unspentTransactionOutputs.apply(block.transaction());
 		return this;
 	}
 	

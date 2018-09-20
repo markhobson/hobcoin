@@ -53,12 +53,18 @@ class UnspentTransactionOutputs
 			.collect(toList());
 	}
 	
-	public void removeSpentTransactionOutputs(Transaction transaction)
+	public void apply(Transaction transaction)
+	{
+		removeInputs(transaction);
+		addOutputs(transaction);
+	}
+	
+	private void removeInputs(Transaction transaction)
 	{
 		unspentOutputs.keySet().removeAll(transaction.inputPoints());
 	}
-	
-	public void addUnspentTransactionOutputs(Transaction transaction)
+
+	private void addOutputs(Transaction transaction)
 	{
 		for (TransactionOutputPoint outputPoint : transaction.outputPoints())
 		{
