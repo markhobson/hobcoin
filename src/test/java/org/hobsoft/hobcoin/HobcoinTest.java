@@ -29,7 +29,7 @@ public class HobcoinTest
 		Wallet alice = new Wallet();
 		Wallet bob = new Wallet();
 
-		Blockchain blockchain = new Blockchain(alice.address(), 15);
+		Blockchain blockchain = new Blockchain(alice.address(), 15, 5);
 		
 		Transaction tx = alice.transfer(blockchain, bob.address(), 10);
 		Block block = new Block(tx, blockchain.tail().hash());

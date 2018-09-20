@@ -28,16 +28,17 @@ public class Blockchain implements Iterable<Block>
 {
 	private static final String GENESIS_BLOCK_HASH = "0";
 	
-	private static final int MINING_DIFFICULTY = 5;
-	
 	private final List<Block> blocks;
 	
 	private final UnspentTransactionOutputs unspentTransactionOutputs;
 	
-	public Blockchain(PublicKey recipient, long amount)
+	private final int difficulty;
+	
+	public Blockchain(PublicKey recipient, long amount, int difficulty)
 	{
 		blocks = new ArrayList<>();
 		unspentTransactionOutputs = new UnspentTransactionOutputs();
+		this.difficulty = difficulty;
 		
 		addQuietly(newGenesisBlock(recipient, amount));
 	}
@@ -89,7 +90,7 @@ public class Blockchain implements Iterable<Block>
 	
 	public int difficulty()
 	{
-		return MINING_DIFFICULTY;
+		return difficulty;
 	}
 	
 	public List<UnspentTransactionOutput> unspentTransactionOutputs(PublicKey owner, long minimumAmount)

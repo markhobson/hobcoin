@@ -37,7 +37,7 @@ public class BlockchainTest
 	public void setUp()
 	{
 		Wallet wallet = new Wallet();
-		blockchain = new Blockchain(wallet.address(), 100);
+		blockchain = new Blockchain(wallet.address(), 100, 2);
 	}
 	
 	@Test
