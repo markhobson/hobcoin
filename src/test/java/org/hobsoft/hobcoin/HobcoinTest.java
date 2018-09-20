@@ -32,8 +32,8 @@ public class HobcoinTest
 		Blockchain blockchain = new Blockchain(alice.address(), 15, 5);
 		
 		Transaction tx = alice.transfer(blockchain, bob.address(), 10);
-		Block block = new Block(tx, blockchain.tail().hash());
-		block.mine(blockchain.difficulty());
+		Block block = new Block(tx, blockchain.tail().hash())
+			.mine(blockchain.difficulty());
 		blockchain.add(block);
 		
 		assertThat("alice", alice.amount(blockchain), is(5L));

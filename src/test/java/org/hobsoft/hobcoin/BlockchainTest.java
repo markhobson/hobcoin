@@ -43,8 +43,8 @@ public class BlockchainTest
 	@Test
 	public void canAddBlock()
 	{
-		Block block = new Block(someTransaction(), blockchain.tail().hash());
-		block.mine(blockchain.difficulty());
+		Block block = new Block(someTransaction(), blockchain.tail().hash())
+			.mine(blockchain.difficulty());
 		
 		blockchain.add(block);
 		
@@ -58,7 +58,8 @@ public class BlockchainTest
 	@Test
 	public void cannotAddBlockWithInvalidPreviousHash()
 	{
-		Block block = new Block(someTransaction(), "123");
+		Block block = new Block(someTransaction(), "123")
+			.mine(blockchain.difficulty());
 		
 		thrown.expect(InvalidBlockException.class);
 		

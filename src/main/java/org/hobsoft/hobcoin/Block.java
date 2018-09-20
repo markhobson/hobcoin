@@ -64,7 +64,7 @@ public class Block
 		return previous.hash().equals(previousHash);
 	}
 	
-	public void mine(int difficulty)
+	public Block mine(int difficulty)
 	{
 		LOG.log(INFO, "Mining to difficulty {0}...", difficulty);
 		long start = System.currentTimeMillis();
@@ -76,6 +76,8 @@ public class Block
 		}
 		
 		LOG.log(INFO, "Mined block {0} in {1}ms", new Object[] {hash, System.currentTimeMillis() - start});
+		
+		return this;
 	}
 	
 	public boolean isMined(int difficulty)
