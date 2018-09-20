@@ -65,7 +65,8 @@ public class Blockchain implements Iterable<Block>
 	 * 
 	 * @param block the block to add
 	 * @return this blockchain
-	 * @throws InvalidBlockException if the block's previous hash does not match the tail block's hash
+	 * @throws InvalidBlockException if the block's previous hash does not match the tail block's hash, or the block is
+	 * not mined to the current difficultly
 	 */
 	public Blockchain add(Block block)
 	{
