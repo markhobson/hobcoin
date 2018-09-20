@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -72,6 +73,19 @@ public class BlockchainTest
 		Block block = new Block(someTransaction(), blockchain.tail().hash());
 		
 		thrown.expect(InvalidBlockException.class);
+		
+		blockchain.add(block);
+	}
+	
+	@Test
+	public void cannotAddBlockWithSpentTransactionInput()
+	{
+		TransactionInput input = new TransactionInput(new TransactionOutputPoint("123", 4));
+		Transaction transaction = new Transaction(singletonList(input), emptyList());
+		Block block = new Block(transaction, blockchain.tail().hash())
+			.mine(blockchain.difficulty());
+		
+		thrown.expect(InvalidTransactionException.class);
 		
 		blockchain.add(block);
 	}

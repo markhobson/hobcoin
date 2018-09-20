@@ -15,7 +15,10 @@ package org.hobsoft.hobcoin;
 
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -24,16 +27,22 @@ import static java.util.stream.Collectors.toList;
  */
 class UnspentTransactionOutputs
 {
-	private final List<UnspentTransactionOutput> unspentOutputs;
+	private final Map<TransactionOutputPoint, UnspentTransactionOutput> unspentOutputs;
 	
 	UnspentTransactionOutputs()
 	{
-		unspentOutputs = new ArrayList<>();
+		unspentOutputs = new HashMap<>();
+	}
+	
+	public Optional<UnspentTransactionOutput> find(TransactionOutputPoint outputPoint)
+	{
+		return Optional.ofNullable(unspentOutputs.get(outputPoint));
 	}
 	
 	public List<UnspentTransactionOutput> unspentTransactionOutputs(PublicKey owner, long minimumAmount)
 	{
-		List<UnspentTransactionOutput> ownerUnspentOutputs = unspentOutputs.stream()
+		List<UnspentTransactionOutput> ownerUnspentOutputs = unspentOutputs.values()
+			.stream()
 			.filter(out -> out.recipient().equals(owner))
 			.collect(toList());
 		
@@ -47,22 +56,23 @@ class UnspentTransactionOutputs
 	
 	public void removeSpentTransactionOutputs(Transaction transaction)
 	{
-		transaction.inputs()
-			.forEach(input -> removeSpentTransactionOutput(input.transactionOutputPoint()));
+		unspentOutputs.keySet().removeAll(transaction.inputs()
+			.stream()
+			.map(TransactionInput::transactionOutputPoint)
+			.collect(toList())
+		);
 	}
 	
 	public void addUnspentTransactionOutputs(Transaction transaction)
 	{
-		for (int index = 0; index < transaction.outputs().size(); index++)
+		for (TransactionOutputPoint outputPoint : transaction.outputPoints())
 		{
-			TransactionOutput output = transaction.outputs().get(index);
-			
-			TransactionOutputPoint outputPoint = new TransactionOutputPoint(transaction.id(), index);
+			TransactionOutput output = transaction.output(outputPoint);
 			
 			UnspentTransactionOutput unspentOutput = new UnspentTransactionOutput(outputPoint, output.recipient(),
 				output.amount());
 			
-			unspentOutputs.add(unspentOutput);
+			unspentOutputs.put(outputPoint, unspentOutput);
 		}
 	}
 	
@@ -81,10 +91,5 @@ class UnspentTransactionOutputs
 		}
 		
 		return unspentOutputs;
-	}
-	
-	private void removeSpentTransactionOutput(TransactionOutputPoint transactionOutputPoint)
-	{
-		unspentOutputs.removeIf(unspentOutput -> unspentOutput.transactionOutputPoint().equals(transactionOutputPoint));
 	}
 }

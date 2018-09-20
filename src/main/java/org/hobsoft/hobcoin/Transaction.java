@@ -14,10 +14,14 @@
 package org.hobsoft.hobcoin;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import com.google.common.hash.Hashing;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.toList;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * A blockchain transaction of one or more inputs to one or more outputs.
@@ -51,6 +55,20 @@ public class Transaction
 	public List<TransactionOutput> outputs()
 	{
 		return outputs;
+	}
+	
+	public TransactionOutput output(TransactionOutputPoint outputPoint)
+	{
+		checkArgument(id.equals(outputPoint.transactionId()), "Invalid transaction id: " + outputPoint);
+		
+		return outputs.get(outputPoint.transactionOutputIndex());
+	}
+	
+	public List<TransactionOutputPoint> outputPoints()
+	{
+		return IntStream.range(0, outputs.size())
+			.mapToObj(index -> new TransactionOutputPoint(id, index))
+			.collect(toList());
 	}
 	
 	private String calculateHash()

@@ -68,6 +68,7 @@ public class Blockchain implements Iterable<Block>
 	 * @return this blockchain
 	 * @throws InvalidBlockException if the block's previous hash does not match the tail block's hash, or the block is
 	 * not mined to the current difficultly
+	 * @throws InvalidTransactionException if a transaction input within the block has already been spent 
 	 */
 	public Blockchain add(Block block)
 	{
@@ -101,6 +102,21 @@ public class Blockchain implements Iterable<Block>
 		{
 			throw new InvalidBlockException("Unmined block");
 		}
+		
+		validateTransaction(block.transaction());
+	}
+	
+	private void validateTransaction(Transaction transaction)
+	{
+		// TODO: validate transaction id
+		
+		transaction.inputs().forEach(this::validateTransactionInput);
+	}
+	
+	private void validateTransactionInput(TransactionInput input)
+	{
+		unspentTransactionOutputs.find(input.transactionOutputPoint())
+			.orElseThrow(() -> new InvalidTransactionException("Spent transaction input: " + input));
 	}
 	
 	private Blockchain addQuietly(Block block)
