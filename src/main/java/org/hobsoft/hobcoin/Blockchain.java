@@ -69,7 +69,7 @@ public class Blockchain implements Iterable<Block>
 	 * @throws InvalidBlockException if the block's previous hash does not match the tail block's hash, or the block is
 	 * not mined to the current difficultly
 	 * @throws InvalidTransactionException if a transaction input within the block has already been spent, or a
-	 * transaction input has not been signed
+	 * transaction input has not been signed, or a transaction input signature cannot be verified
 	 */
 	public Blockchain add(Block block)
 	{
@@ -116,12 +116,17 @@ public class Blockchain implements Iterable<Block>
 	
 	private void validateTransactionInput(TransactionInput input)
 	{
-		unspentTransactionOutputs.find(input.transactionOutputPoint())
+		UnspentTransactionOutput unspentOutput = unspentTransactionOutputs.find(input.transactionOutputPoint())
 			.orElseThrow(() -> new InvalidTransactionException("Spent transaction input: " + input));
-
+		
 		if (!input.signed())
 		{
 			throw new InvalidTransactionException("Unsigned transaction input");
+		}
+
+		if (!input.verify(unspentOutput.recipient()))
+		{
+			throw new InvalidTransactionException("Unverified transaction input signature");
 		}
 	}
 	

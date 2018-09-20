@@ -91,12 +91,19 @@ public class TransactionInput
 		}
 	}
 	
-	public boolean verify(PublicKey address) throws GeneralSecurityException, IOException
+	public boolean verify(PublicKey address)
 	{
-		Signature verifier = Signature.getInstance("SHA256withECDSA");
-		verifier.initVerify(address);
-		verifier.update(data());
-		return verifier.verify(signature);
+		try
+		{
+			Signature verifier = Signature.getInstance("SHA256withECDSA");
+			verifier.initVerify(address);
+			verifier.update(data());
+			return verifier.verify(signature);
+		}
+		catch (GeneralSecurityException | IOException exception)
+		{
+			throw new HobcoinException("Error verifying transaction input signature", exception);
+		}
 	}
 	
 	private byte[] data() throws IOException

@@ -13,6 +13,10 @@
  */
 package org.hobsoft.hobcoin;
 
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -103,8 +107,27 @@ public class BlockchainTest
 		blockchain.add(block);
 	}
 	
+	@Test
+	public void cannotAddBlockWithUnverifiedTransactionInput() throws Exception
+	{
+		TransactionInput input = new TransactionInput(blockchain.tail().transaction().outputPoints().iterator().next())
+			.sign(somePrivateKey());
+		Transaction transaction = new Transaction(singletonList(input), emptyList());
+		Block block = new Block(transaction, blockchain.tail().hash())
+			.mine(blockchain.difficulty());
+		
+		thrown.expect(InvalidTransactionException.class);
+		
+		blockchain.add(block);
+	}
+	
 	private static Transaction someTransaction()
 	{
 		return new Transaction(emptyList(), emptyList());
+	}
+	
+	private static PrivateKey somePrivateKey() throws NoSuchAlgorithmException
+	{
+		return KeyPairGenerator.getInstance("EC").generateKeyPair().getPrivate();
 	}
 }
