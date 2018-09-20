@@ -70,6 +70,10 @@ public class Blockchain implements Iterable<Block>
 	 */
 	public Blockchain add(Block block)
 	{
+		// TODO: validate block hash
+		
+		// TODO: validate block timestamp
+		
 		if (!tail().hash().equals(block.previousHash()))
 		{
 			throw new InvalidBlockException("Previous hash does not match tail block");
@@ -83,23 +87,6 @@ public class Blockchain implements Iterable<Block>
 		return addQuietly(block);
 	}
 	
-	public boolean isValid()
-	{
-		Block previous = null;
-		
-		for (Block block : blocks)
-		{
-			if (!block.isValid(previous, MINING_DIFFICULTY))
-			{
-				return false;
-			}
-			
-			previous = block;
-		}
-		
-		return true;
-	}
-
 	public int difficulty()
 	{
 		return MINING_DIFFICULTY;

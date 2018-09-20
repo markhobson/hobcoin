@@ -51,6 +51,10 @@ public class BlockchainTest
 		assertThat(blockchain.height(), is(2));
 	}
 	
+	// TODO: cannotAddBlockWithInvalidHash
+	
+	// TODO: cannotAddBlockWithPastTimestamp
+	
 	@Test
 	public void cannotAddBlockWithInvalidPreviousHash()
 	{

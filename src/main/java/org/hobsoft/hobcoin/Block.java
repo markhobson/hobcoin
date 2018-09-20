@@ -64,13 +64,6 @@ public class Block
 		return hash;
 	}
 	
-	public boolean isValid(Block previous, int difficulty)
-	{
-		return hash.equals(calculateHash())
-			&& (previous == null || previousHash.equals(previous.hash()))
-			&& isMined(difficulty);
-	}
-	
 	public void mine(int difficulty)
 	{
 		LOG.log(INFO, "Mining to difficulty {0}...", difficulty);
