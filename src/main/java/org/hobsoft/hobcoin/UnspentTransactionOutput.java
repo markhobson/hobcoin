@@ -20,25 +20,17 @@ import java.security.PublicKey;
  */
 class UnspentTransactionOutput extends TransactionOutput
 {
-	private final String transactionId;
+	private final TransactionOutputPoint transactionOutputPoint;
 	
-	private final int transactionOutputIndex;
-	
-	UnspentTransactionOutput(String transactionId, int transactionOutputIndex, PublicKey recipient, long amount)
+	UnspentTransactionOutput(TransactionOutputPoint transactionOutputPoint, PublicKey recipient, long amount)
 	{
 		super(recipient, amount);
 		
-		this.transactionId = transactionId;
-		this.transactionOutputIndex = transactionOutputIndex;
+		this.transactionOutputPoint = transactionOutputPoint;
 	}
 	
-	public String transactionId()
+	public TransactionOutputPoint transactionOutputPoint()
 	{
-		return transactionId;
-	}
-	
-	public int transactionOutputIndex()
-	{
-		return transactionOutputIndex;
+		return transactionOutputPoint;
 	}
 }

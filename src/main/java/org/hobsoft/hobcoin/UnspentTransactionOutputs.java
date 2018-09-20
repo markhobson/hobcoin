@@ -48,7 +48,7 @@ class UnspentTransactionOutputs
 	public void removeSpentTransactionOutputs(Transaction transaction)
 	{
 		transaction.inputs()
-			.forEach(input -> removeSpentTransactionOutput(input.transactionId(), input.transactionOutputIndex()));
+			.forEach(input -> removeSpentTransactionOutput(input.transactionOutputPoint()));
 	}
 	
 	public void addUnspentTransactionOutputs(Transaction transaction)
@@ -57,8 +57,10 @@ class UnspentTransactionOutputs
 		{
 			TransactionOutput output = transaction.outputs().get(index);
 			
-			UnspentTransactionOutput unspentOutput = new UnspentTransactionOutput(transaction.id(), index,
-				output.recipient(), output.amount());
+			TransactionOutputPoint outputPoint = new TransactionOutputPoint(transaction.id(), index);
+			
+			UnspentTransactionOutput unspentOutput = new UnspentTransactionOutput(outputPoint, output.recipient(),
+				output.amount());
 			
 			unspentOutputs.add(unspentOutput);
 		}
@@ -81,10 +83,8 @@ class UnspentTransactionOutputs
 		return unspentOutputs;
 	}
 	
-	private void removeSpentTransactionOutput(String transactionId, int transactionOutputIndex)
+	private void removeSpentTransactionOutput(TransactionOutputPoint transactionOutputPoint)
 	{
-		unspentOutputs.removeIf(unspentOutput -> unspentOutput.transactionId().equals(transactionId)
-			&& unspentOutput.transactionOutputIndex() == transactionOutputIndex
-		);
+		unspentOutputs.removeIf(unspentOutput -> unspentOutput.transactionOutputPoint().equals(transactionOutputPoint));
 	}
 }

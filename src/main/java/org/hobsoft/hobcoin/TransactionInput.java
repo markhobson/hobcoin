@@ -30,9 +30,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class TransactionInput
 {
-	private final String transactionId;
-	
-	private final int transactionOutputIndex;
+	private final TransactionOutputPoint transactionOutputPoint;
 	
 	private final byte[] signature;
 	
@@ -40,26 +38,25 @@ public class TransactionInput
 	
 	public TransactionInput(UnspentTransactionOutput unspentTransactionOutput)
 	{
-		this(unspentTransactionOutput.transactionId(), unspentTransactionOutput.transactionOutputIndex(), null);
+		this(unspentTransactionOutput.transactionOutputPoint());
 	}
 	
-	private TransactionInput(String transactionId, int transactionOutputIndex, byte[] signature)
+	public TransactionInput(TransactionOutputPoint transactionOutputPoint)
 	{
-		this.transactionId = transactionId;
-		this.transactionOutputIndex = transactionOutputIndex;
+		this(transactionOutputPoint, null);
+	}
+	
+	private TransactionInput(TransactionOutputPoint transactionOutputPoint, byte[] signature)
+	{
+		this.transactionOutputPoint = transactionOutputPoint;
 		this.signature = signature;
 		
 		hash = calculateHash();
 	}
 	
-	public String transactionId()
+	public TransactionOutputPoint transactionOutputPoint()
 	{
-		return transactionId;
-	}
-	
-	public int transactionOutputIndex()
-	{
-		return transactionOutputIndex;
+		return transactionOutputPoint;
 	}
 	
 	public String hash()
@@ -81,7 +78,7 @@ public class TransactionInput
 			signer.update(data());
 			byte[] signature = signer.sign();
 			
-			return new TransactionInput(transactionId, transactionOutputIndex, signature);
+			return new TransactionInput(transactionOutputPoint, signature);
 		}
 		catch (GeneralSecurityException | IOException exception)
 		{
@@ -101,7 +98,7 @@ public class TransactionInput
 	{
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(bytes);
-		out.writeUTF(transactionId);
+		out.writeUTF(transactionOutputPoint.transactionId());
 		return bytes.toByteArray();
 	}
 
@@ -109,8 +106,8 @@ public class TransactionInput
 	{
 		return Hashing.sha256()
 			.hashObject(this, (from, into) -> into
-				.putString(transactionId, UTF_8)
-				.putInt(transactionOutputIndex)
+				.putString(transactionOutputPoint.transactionId(), UTF_8)
+				.putInt(transactionOutputPoint.transactionOutputIndex())
 			)
 			.toString();
 	}
