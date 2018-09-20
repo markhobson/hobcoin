@@ -36,6 +36,9 @@ public class Transaction
 	
 	Transaction(List<TransactionInput> inputs, List<TransactionOutput> outputs)
 	{
+		checkArgument(!inputs.isEmpty(), "No transaction inputs");
+		checkArgument(!outputs.isEmpty(), "No transaction outputs");
+		
 		this.inputs = inputs;
 		this.outputs = outputs;
 		

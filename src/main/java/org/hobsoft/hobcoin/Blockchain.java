@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 /**
@@ -26,8 +25,6 @@ import static java.util.Collections.singletonList;
  */
 public class Blockchain implements Iterable<Block>
 {
-	private static final String GENESIS_BLOCK_HASH = "0";
-	
 	private final List<Block> blocks;
 	
 	private final UnspentTransactionOutputs unspentTransactionOutputs;
@@ -140,8 +137,9 @@ public class Blockchain implements Iterable<Block>
 	
 	private static Block newGenesisBlock(PublicKey recipient, long amount)
 	{
+		TransactionInput input = new TransactionInput(new TransactionOutputPoint("0", 0));
 		TransactionOutput output = new TransactionOutput(recipient, amount);
-		Transaction transaction = new Transaction(emptyList(), singletonList(output));
-		return new Block(transaction, GENESIS_BLOCK_HASH);
+		Transaction transaction = new Transaction(singletonList(input), singletonList(output));
+		return new Block(transaction, "0");
 	}
 }

@@ -16,13 +16,13 @@ package org.hobsoft.hobcoin;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,12 +36,14 @@ public class BlockchainTest
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 	
+	private Wallet wallet;
+	
 	private Blockchain blockchain;
 	
 	@Before
 	public void setUp()
 	{
-		Wallet wallet = new Wallet();
+		wallet = new Wallet();
 		blockchain = new Blockchain(wallet.address(), 100, 2);
 	}
 	
@@ -85,7 +87,7 @@ public class BlockchainTest
 	public void cannotAddBlockWithSpentTransactionInput()
 	{
 		TransactionInput input = new TransactionInput(new TransactionOutputPoint("123", 4));
-		Transaction transaction = new Transaction(singletonList(input), emptyList());
+		Transaction transaction = new Transaction(singletonList(input), singletonList(someTransactionOutput()));
 		Block block = new Block(transaction, blockchain.tail().hash())
 			.mine(blockchain.difficulty());
 		
@@ -98,7 +100,7 @@ public class BlockchainTest
 	public void cannotAddBlockWithUnsignedTransactionInput()
 	{
 		TransactionInput input = new TransactionInput(blockchain.tail().transaction().outputPoints().iterator().next());
-		Transaction transaction = new Transaction(singletonList(input), emptyList());
+		Transaction transaction = new Transaction(singletonList(input), singletonList(someTransactionOutput()));
 		Block block = new Block(transaction, blockchain.tail().hash())
 			.mine(blockchain.difficulty());
 		
@@ -112,7 +114,7 @@ public class BlockchainTest
 	{
 		TransactionInput input = new TransactionInput(blockchain.tail().transaction().outputPoints().iterator().next())
 			.sign(somePrivateKey());
-		Transaction transaction = new Transaction(singletonList(input), emptyList());
+		Transaction transaction = new Transaction(singletonList(input), singletonList(someTransactionOutput()));
 		Block block = new Block(transaction, blockchain.tail().hash())
 			.mine(blockchain.difficulty());
 		
@@ -121,11 +123,19 @@ public class BlockchainTest
 		blockchain.add(block);
 	}
 	
-	private static Transaction someTransaction()
+	private Transaction someTransaction()
 	{
-		return new Transaction(emptyList(), emptyList());
+		PublicKey recipient = new Wallet().address();
+		long amount = wallet.amount(blockchain);
+		
+		return wallet.transfer(blockchain, recipient, amount);
 	}
 	
+	private static TransactionOutput someTransactionOutput()
+	{
+		return new TransactionOutput(new Wallet().address(), 1);
+	}
+
 	private static PrivateKey somePrivateKey() throws NoSuchAlgorithmException
 	{
 		return KeyPairGenerator.getInstance("EC").generateKeyPair().getPrivate();

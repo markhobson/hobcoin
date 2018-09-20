@@ -13,8 +13,11 @@
  */
 package org.hobsoft.hobcoin;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 import static org.hamcrest.Matchers.contains;
@@ -26,17 +29,39 @@ import static org.junit.Assert.assertThat;
  */
 public class TransactionTest
 {
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+	
 	@Test
 	public void canCreateTransaction()
 	{
-		Wallet wallet = new Wallet();
 		TransactionInput input = new TransactionInput(new TransactionOutputPoint("123", 4));
-		TransactionOutput output = new TransactionOutput(wallet.address(), 4);
+		TransactionOutput output = new TransactionOutput(new Wallet().address(), 4);
 		
 		Transaction transaction = new Transaction(singletonList(input), singletonList(output));
 		
 		assertThat("id", transaction.id(), notNullValue(String.class));
 		assertThat("inputs", transaction.inputs(), contains(input));
 		assertThat("outputs", transaction.outputs(), contains(output));
+	}
+	
+	@Test
+	public void cannotCreateTransactionWithNoInputs()
+	{
+		TransactionOutput output = new TransactionOutput(new Wallet().address(), 4);
+
+		thrown.expect(IllegalArgumentException.class);
+		
+		new Transaction(emptyList(), singletonList(output));
+	}
+	
+	@Test
+	public void cannotCreateTransactionWithNoOutputs()
+	{
+		TransactionInput input = new TransactionInput(new TransactionOutputPoint("123", 4));
+
+		thrown.expect(IllegalArgumentException.class);
+		
+		new Transaction(singletonList(input), emptyList());
 	}
 }
