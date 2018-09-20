@@ -71,6 +71,23 @@ public class Blockchain implements Iterable<Block>
 	 */
 	public Blockchain add(Block block)
 	{
+		validateBlock(block);
+		
+		return addQuietly(block);
+	}
+	
+	public int difficulty()
+	{
+		return difficulty;
+	}
+	
+	public List<UnspentTransactionOutput> unspentTransactionOutputs(PublicKey owner, long minimumAmount)
+	{
+		return unspentTransactionOutputs.unspentTransactionOutputs(owner, minimumAmount);
+	}
+	
+	private void validateBlock(Block block)
+	{
 		// TODO: validate block hash
 		
 		// TODO: validate block timestamp
@@ -84,18 +101,6 @@ public class Blockchain implements Iterable<Block>
 		{
 			throw new InvalidBlockException("Unmined block");
 		}
-		
-		return addQuietly(block);
-	}
-	
-	public int difficulty()
-	{
-		return difficulty;
-	}
-	
-	public List<UnspentTransactionOutput> unspentTransactionOutputs(PublicKey owner, long minimumAmount)
-	{
-		return unspentTransactionOutputs.unspentTransactionOutputs(owner, minimumAmount);
 	}
 	
 	private Blockchain addQuietly(Block block)
