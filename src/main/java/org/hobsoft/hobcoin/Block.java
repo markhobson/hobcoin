@@ -49,9 +49,24 @@ public class Block
 		hash = calculateHash();
 	}
 	
+	public String previousHash()
+	{
+		return previousHash;
+	}
+	
+	public long timestamp()
+	{
+		return timestamp;
+	}
+	
 	public Transaction transaction()
 	{
 		return transaction;
+	}
+	
+	public int nonce()
+	{
+		return nonce;
 	}
 	
 	public String hash()
